@@ -124,12 +124,7 @@ function App() {
   };
 
   const handleComplete = () => {
-    setIsRedirecting(true);
-    // Add a slight delay for smooth transition
-    setTimeout(() => {
-      setShowWorkPermitModal(false);
-      window.location.href = 'https://pay.pesapal.com/iframe/PesapalIframe3/Index?OrderTrackingId=2fc6a799-63b8-452b-9c9a-dc4f11a1f174';
-    }, 1000);
+    setShowWorkPermitModal(false);
   };
 
   if (isAdmin) {
@@ -265,12 +260,6 @@ function App() {
 
       <Modal isOpen={showWorkPermitModal} onClose={() => setShowWorkPermitModal(false)}>
         <WorkPermitModal onComplete={handleComplete} />
-        {isRedirecting && (
-          <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex flex-col items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-            <p className="text-lg text-gray-700">Redirecting to payment...</p>
-          </div>
-        )}
       </Modal>
     </div>
   );

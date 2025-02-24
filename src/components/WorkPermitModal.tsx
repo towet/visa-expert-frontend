@@ -1,11 +1,85 @@
-import React from 'react';
-import { Check, Shield, Plane, FileCheck, ArrowRight, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, Plane, FileCheck, ArrowRight, Users } from 'lucide-react';
+import axios from 'axios';
 
 interface WorkPermitModalProps {
   onComplete: () => void;
 }
 
+// Get the API URL from environment or default to localhost in development
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export function WorkPermitModal({ onComplete }: WorkPermitModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handlePayment = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get token
+      console.log('Getting token...');
+      const tokenResponse = await axios.get(`${API_URL}/api/get-token`);
+      const tokenData = tokenResponse.data;
+      
+      if (!tokenData.token) {
+        throw new Error('Failed to get token');
+      }
+
+      console.log('Token received:', tokenData);
+
+      // Submit order
+      const orderData = {
+        id: `visa_expert_${Date.now()}`,
+        currency: 'KES',
+        amount: 950,
+        description: 'Work Permit Application Fee',
+        callback_url: `${API_URL}/api/ipn`,
+        notification_id: '',
+        branch: 'Visa Expert',
+        billing_address: {
+          email_address: 'customer@example.com',
+          phone_number: '0700000000',
+          country_code: 'KE',
+          first_name: 'Customer',
+          middle_name: '',
+          last_name: 'Name',
+          line_1: 'Nairobi',
+          line_2: '',
+          city: 'Nairobi',
+          state: '',
+          postal_code: '',
+          zip_code: '',
+        },
+      };
+
+      console.log('Submitting order with data:', orderData);
+
+      const submitResponse = await axios.post(`${API_URL}/api/submit-order`, {
+        token: tokenData.token,
+        orderData,
+      });
+
+      const submitData = submitResponse.data;
+      console.log('Order submitted successfully:', submitData);
+
+      if (submitData.redirect_url) {
+        window.location.href = submitData.redirect_url;
+      } else if (submitData.order_tracking_id) {
+        window.location.href = `https://pay.pesapal.com/iframe/PesapalIframe3/Index?OrderTrackingId=${submitData.order_tracking_id}`;
+      } else {
+        throw new Error('No redirect URL received');
+      }
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.error || err.message || 'Payment failed';
+      setError(errorMessage);
+      console.error('Payment error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-h-[90vh] overflow-y-auto px-4 sm:px-6">
       <div className="text-center">
@@ -48,15 +122,19 @@ export function WorkPermitModal({ onComplete }: WorkPermitModalProps) {
       </div>
 
       <button
-        onClick={() => {
-          window.location.href = 'https://canadian-visa-payment.netlify.app/';
-          onComplete();
-        }}
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] flex items-center justify-center space-x-2"
+        onClick={handlePayment}
+        disabled={loading}
+        className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] flex items-center justify-center space-x-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
-        <span>Complete Application</span>
-        <ArrowRight className="w-5 h-5" />
+        <span>{loading ? 'Processing...' : 'Complete Application'}</span>
+        {!loading && <ArrowRight className="w-5 h-5" />}
       </button>
+
+      {error && (
+        <div className="text-red-600 text-sm text-center">
+          {error}
+        </div>
+      )}
 
       <p className="text-center text-sm text-gray-500">
         Join thousands of successful applicants already working in Canada
