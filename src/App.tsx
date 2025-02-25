@@ -10,6 +10,9 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { initializeDatabase } from './lib/initSupabase';
 import { UserCircle2 } from 'lucide-react';
+import { UpcomingInterviewModal } from './components/UpcomingInterviewModal';
+import { LoginPromptModal } from './components/LoginPromptModal';
+import { Calendar, Users, Building2, GraduationCap, Clock, ArrowRight, Bell } from 'lucide-react';
 
 interface Company {
   id: number;
@@ -40,6 +43,9 @@ function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loginError, setLoginError] = useState('');
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isInterviewModalOpen, setIsInterviewModalOpen] = useState(false);
+  const [isLoginPromptOpen, setIsLoginPromptOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Replace with your actual auth state
 
   useEffect(() => {
     initializeDatabase();
@@ -127,6 +133,21 @@ function App() {
     setShowWorkPermitModal(false);
   };
 
+  const handleInterviewClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginPromptOpen(true);
+    } else {
+      setIsInterviewModalOpen(true);
+    }
+  };
+
+  const handleLoginPromptLogin = () => {
+    // Implement your login logic here
+    setIsLoginPromptOpen(false);
+    // After successful login:
+    // setIsLoggedIn(true);
+  };
+
   if (isAdmin) {
     return <AdminDashboard onLogout={() => setIsAdmin(false)} />;
   }
@@ -141,22 +162,62 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={() => setShowAdminModal(true)}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          aria-label="Admin Login"
-        >
-          <UserCircle2 className="w-6 h-6 text-gray-700" />
-        </button>
-      </div>
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center logo-container">
+              <img 
+                src="https://th.bing.com/th/id/R.14966e45f1061faf931e253192ec8c5b?rik=XXQbXorrx7d7Ug&pid=ImgRaw&r=0" 
+                alt="Visa Expert Logo" 
+                className="h-12 w-auto object-contain rounded-lg shadow-sm"
+              />
+              <div className="ml-3">
+                <h1 className="text-xl font-semibold text-gray-900">Visa Expert</h1>
+                <p className="text-sm text-gray-500">Your Gateway to Success</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {/* My Interviews Button */}
+              <button
+                onClick={handleInterviewClick}
+                className="relative inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors group"
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                <span className="font-medium">My Interviews</span>
+                {isLoggedIn && (
+                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    1
+                  </span>
+                )}
+              </button>
 
-      <Header 
-        userName={currentUser?.full_name || 'Guest'} 
-        isLoggedIn={!!currentUser}
-        onLogout={handleLogout}
-      />
-      
+              {/* Notifications */}
+              <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                <span className="sr-only">View notifications</span>
+                <Bell className="w-6 h-6" />
+                {isLoggedIn && (
+                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
+                )}
+              </button>
+
+              {/* User menu */}
+              <div className="relative">
+                <button 
+                  onClick={!isLoggedIn ? handleLoginPromptLogin : undefined}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                >
+                  <UserCircle2 className="w-8 h-8" />
+                  <span className="hidden sm:block font-medium">
+                    {isLoggedIn ? 'Account' : 'Login'}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <WelcomeBanner />
 
@@ -261,6 +322,114 @@ function App() {
       <Modal isOpen={showWorkPermitModal} onClose={() => setShowWorkPermitModal(false)}>
         <WorkPermitModal onComplete={handleComplete} />
       </Modal>
+
+      <Modal isOpen={isInterviewModalOpen} onClose={() => setIsInterviewModalOpen(false)}>
+        <UpcomingInterviewModal onClose={() => setIsInterviewModalOpen(false)} />
+      </Modal>
+
+      <Modal isOpen={isLoginPromptOpen} onClose={() => setIsLoginPromptOpen(false)}>
+        <LoginPromptModal 
+          onClose={() => setIsLoginPromptOpen(false)}
+          onLogin={handleLoginPromptLogin}
+        />
+      </Modal>
+
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Your Gateway to Canadian Employment
+            </h1>
+            <p className="text-xl text-gray-600">
+              Fast-track your career with our comprehensive work permit and interview services
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Work Permit Card */}
+            <div 
+              onClick={() => setShowWorkPermitModal(true)}
+              className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-[1.02] hover:shadow-xl"
+            >
+              <div className="p-6">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                  <Building2 className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Work Permit</h3>
+                <p className="text-gray-600 mb-4">
+                  Secure your Canadian work permit with our streamlined application process
+                </p>
+                <div className="flex items-center text-blue-600">
+                  <span className="font-medium">Apply Now</span>
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </div>
+              </div>
+            </div>
+
+            {/* Upcoming Interview Card */}
+            <div 
+              onClick={() => setIsInterviewModalOpen(true)}
+              className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-[1.02] hover:shadow-xl"
+            >
+              <div className="p-6">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                  <Calendar className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Upcoming Interview</h3>
+                <p className="text-gray-600 mb-4">
+                  View and confirm your upcoming interview with company supervisors
+                </p>
+                <div className="flex items-center text-green-600">
+                  <span className="font-medium">View Details</span>
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Services Card */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                  <GraduationCap className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Additional Services</h3>
+                <p className="text-gray-600 mb-4">
+                  Explore our range of support services for a smooth transition
+                </p>
+                <div className="flex items-center text-purple-600">
+                  <span className="font-medium">Learn More</span>
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex items-start space-x-4">
+              <Clock className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">Fast Processing</h4>
+                <p className="text-gray-600">Quick turnaround time for all applications</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-4">
+              <Users className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">Direct Interviews</h4>
+                <p className="text-gray-600">Connect directly with potential employers</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-4">
+              <Building2 className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">Full Support</h4>
+                <p className="text-gray-600">Comprehensive guidance throughout the process</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
