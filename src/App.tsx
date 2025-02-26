@@ -13,6 +13,7 @@ import { UserCircle2 } from 'lucide-react';
 import { UpcomingInterviewModal } from './components/UpcomingInterviewModal';
 import { LoginPromptModal } from './components/LoginPromptModal';
 import { Calendar, Users, Building2, GraduationCap, Clock, ArrowRight, Bell } from 'lucide-react';
+import WhatsAppButton from './components/WhatsAppButton';
 
 interface Company {
   id: number;
@@ -426,6 +427,7 @@ function App() {
           </div>
         </div>
       </div>
+      <WhatsAppButton />
     </div>
   );
 }

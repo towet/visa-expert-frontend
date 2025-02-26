@@ -200,7 +200,6 @@ export function WorkPermitModal({ onComplete }: WorkPermitModalProps) {
       const submitData = submitResponse.data;
       console.log('Order submitted successfully:', submitData);
 
-      // Always use the Index endpoint with OrderTrackingId
       if (submitData.order_tracking_id) {
         const redirectUrl = `https://pay.pesapal.com/iframe/PesapalIframe3/Index?OrderTrackingId=${submitData.order_tracking_id}`;
         console.log('Redirecting to:', redirectUrl);
