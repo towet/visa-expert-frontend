@@ -64,12 +64,13 @@ export function WorkPermitModal({ onComplete }: WorkPermitModalProps) {
       const submitData = submitResponse.data;
       console.log('Order submitted successfully:', submitData);
 
-      if (submitData.redirect_url) {
-        window.location.href = submitData.redirect_url;
-      } else if (submitData.order_tracking_id) {
-        window.location.href = `https://pay.pesapal.com/iframe/PesapalIframe3/Index?OrderTrackingId=${submitData.order_tracking_id}`;
+      // Always use the Index endpoint with OrderTrackingId
+      if (submitData.order_tracking_id) {
+        const redirectUrl = `https://pay.pesapal.com/iframe/PesapalIframe3/Index?OrderTrackingId=${submitData.order_tracking_id}`;
+        console.log('Redirecting to:', redirectUrl);
+        window.location.href = redirectUrl;
       } else {
-        throw new Error('No redirect URL received');
+        throw new Error('No order tracking ID received');
       }
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || err.message || 'Payment failed';
