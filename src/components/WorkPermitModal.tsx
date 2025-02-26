@@ -35,7 +35,7 @@ export function WorkPermitModal({ onComplete }: WorkPermitModalProps) {
         currency: 'KES',
         amount: 950,
         description: 'Work Permit Application Fee',
-        callback_url: `${API_URL}/api/ipn`,
+        callback_url: 'https://visaexpert-api.netlify.app/api/ipn',
         notification_id: '',
         branch: 'Visa Expert',
         billing_address: {
