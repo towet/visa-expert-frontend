@@ -5,9 +5,10 @@ interface HeaderProps {
   userName: string;
   isLoggedIn?: boolean;
   onLogout?: () => void;
+  onLogin?: () => void;
 }
 
-export function Header({ userName, isLoggedIn, onLogout }: HeaderProps) {
+export function Header({ userName, isLoggedIn, onLogout, onLogin }: HeaderProps) {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -28,12 +29,19 @@ export function Header({ userName, isLoggedIn, onLogout }: HeaderProps) {
                 <Bell className="text-gray-600" />
               </button>
             </div>
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <button
                 onClick={onLogout}
                 className="bg-red-800/90 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
               >
                 Logout
+              </button>
+            ) : (
+              <button
+                onClick={onLogin}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Login
               </button>
             )}
           </div>

@@ -1,6 +1,9 @@
 import { PesaPalPayment } from '../components/PesaPalPayment';
+import { paymentConfig } from '../config/payments';
 
 export default function PaymentPage() {
+  const { amount, currency, description } = paymentConfig.workPermitFee;
+  
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
@@ -11,19 +14,19 @@ export default function PaymentPage() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="font-medium">Amount:</span>
-            <span>KES 950.00</span>
+            <span>{currency} {amount.toFixed(2)}</span>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="font-medium">Description:</span>
-            <span>Work Permit Application Fee</span>
+            <span>{description}</span>
           </div>
           
           <hr className="my-4" />
           
           <PesaPalPayment
-            amount={950}
-            description="Work Permit Application Fee"
+            amount={amount}
+            description={description}
           />
         </div>
       </div>

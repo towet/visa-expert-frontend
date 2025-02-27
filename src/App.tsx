@@ -149,6 +149,30 @@ function App() {
     // setIsLoggedIn(true);
   };
 
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+
+    if (loginCredentials.username === 'admin' && loginCredentials.password === 'admin') {
+      setIsAdmin(true);
+      setShowAdminModal(false);
+      setIsLoggedIn(true);
+      setCurrentUser({
+        id: 'admin',
+        username: 'admin',
+        full_name: 'Administrator',
+        email: 'admin@example.com'
+      });
+    } else {
+      setLoginError('Invalid admin credentials');
+    }
+  };
+
+  const handleLoginClick = () => {
+    setShowAdminModal(true);
+    setLoginCredentials({ username: '', password: '' });
+  };
+
   if (isAdmin) {
     return <AdminDashboard onLogout={() => setIsAdmin(false)} />;
   }
@@ -201,12 +225,12 @@ function App() {
               {/* User menu */}
               <div className="relative">
                 <button 
-                  onClick={!isLoggedIn ? handleLoginPromptLogin : undefined}
+                  onClick={!isLoggedIn ? handleLoginClick : undefined}
                   className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
                 >
                   <UserCircle2 className="w-8 h-8" />
                   <span className="hidden sm:block font-medium">
-                    {isLoggedIn ? 'Account' : 'Login'}
+                    {isLoggedIn ? 'Admin Panel' : 'Admin'}
                   </span>
                 </button>
               </div>
@@ -255,81 +279,6 @@ function App() {
           </>
         )}
       </main>
-
-      <Modal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)}>
-        <div className="p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Login to View Opportunities</h2>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={loginCredentials.username}
-                onChange={(e) => setLoginCredentials({ ...loginCredentials, username: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={loginCredentials.password}
-                onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-            {loginError && (
-              <p className="text-sm text-red-600">{loginError}</p>
-            )}
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-            >
-              Login
-            </button>
-          </form>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showAdminModal} onClose={() => setShowAdminModal(false)}>
-        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Admin Login</h2>
-          <AdminLogin onLogin={() => {
-            setIsAdmin(true);
-            setShowAdminModal(false);
-          }} />
-        </div>
-      </Modal>
-
-      <Modal isOpen={showJoinModal} onClose={() => setShowJoinModal(false)}>
-        <JoinModal
-          companyName={selectedCompany || ''}
-          onApplyNow={handleApplyNow}
-        />
-      </Modal>
-
-      <Modal isOpen={showWorkPermitModal} onClose={() => setShowWorkPermitModal(false)}>
-        <WorkPermitModal onComplete={handleComplete} />
-      </Modal>
-
-      <Modal isOpen={isInterviewModalOpen} onClose={() => setIsInterviewModalOpen(false)}>
-        <UpcomingInterviewModal onClose={() => setIsInterviewModalOpen(false)} />
-      </Modal>
-
-      <Modal isOpen={isLoginPromptOpen} onClose={() => setIsLoginPromptOpen(false)}>
-        <LoginPromptModal 
-          onClose={() => setIsLoginPromptOpen(false)}
-          onLogin={handleLoginPromptLogin}
-        />
-      </Modal>
 
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -428,6 +377,111 @@ function App() {
         </div>
       </div>
       <WhatsAppButton />
+      <Modal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)}>
+        <div className="p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Login to View Opportunities</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                value={loginCredentials.username}
+                onChange={(e) => setLoginCredentials({ ...loginCredentials, username: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={loginCredentials.password}
+                onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              />
+            </div>
+            {loginError && (
+              <p className="text-sm text-red-600">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showAdminModal} onClose={() => setShowAdminModal(false)}>
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                value={loginCredentials.username}
+                onChange={(e) => setLoginCredentials({ ...loginCredentials, username: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={loginCredentials.password}
+                onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            {loginError && (
+              <p className="text-red-500 text-sm">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showJoinModal} onClose={() => setShowJoinModal(false)}>
+        <JoinModal
+          companyName={selectedCompany || ''}
+          onApplyNow={handleApplyNow}
+        />
+      </Modal>
+
+      <Modal isOpen={showWorkPermitModal} onClose={() => setShowWorkPermitModal(false)}>
+        <WorkPermitModal onComplete={handleComplete} />
+      </Modal>
+
+      <Modal isOpen={isInterviewModalOpen} onClose={() => setIsInterviewModalOpen(false)}>
+        <UpcomingInterviewModal onClose={() => setIsInterviewModalOpen(false)} />
+      </Modal>
+
+      <Modal isOpen={isLoginPromptOpen} onClose={() => setIsLoginPromptOpen(false)}>
+        <LoginPromptModal 
+          onClose={() => setIsLoginPromptOpen(false)}
+          onLogin={handleLoginPromptLogin}
+        />
+      </Modal>
     </div>
   );
 }
