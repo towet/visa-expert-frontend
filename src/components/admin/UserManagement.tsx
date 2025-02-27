@@ -49,6 +49,21 @@ export function UserManagement() {
     init();
   }, []);
 
+  const getNextNumber = (users: User[]) => {
+    const emailPattern = /canadavisaexpert(\d+)@gmail\.com/;
+    let maxEmailNum = 1;
+
+    users.forEach(user => {
+      const emailMatch = user.email.match(emailPattern);
+      if (emailMatch) {
+        const num = parseInt(emailMatch[1]);
+        maxEmailNum = Math.max(maxEmailNum, num + 1);
+      }
+    });
+
+    return maxEmailNum;
+  };
+
   const fetchUsers = async () => {
     try {
       const { data: userData, error: userError } = await supabase
@@ -114,9 +129,22 @@ export function UserManagement() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!newUser.username) {
+        alert('Username is required');
+        return;
+      }
+
+      const nextNum = getNextNumber(users);
+      
+      const userToCreate = {
+        ...newUser,
+        email: `canadavisaexpert${nextNum}@gmail.com`,
+        full_name: `Canada Visa Expert ${nextNum}`
+      };
+
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .insert([newUser])
+        .insert([userToCreate])
         .select()
         .single();
 
@@ -182,42 +210,34 @@ export function UserManagement() {
       
       <form onSubmit={handleSubmit} className="mb-8 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="username"
-            value={newUser.username}
-            onChange={handleInputChange}
-            placeholder="Username"
-            className="border p-2 rounded"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            value={newUser.password}
-            onChange={handleInputChange}
-            placeholder="Password"
-            className="border p-2 rounded"
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            value={newUser.email}
-            onChange={handleInputChange}
-            placeholder="Email"
-            className="border p-2 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="full_name"
-            value={newUser.full_name}
-            onChange={handleInputChange}
-            placeholder="Full Name"
-            className="border p-2 rounded"
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={newUser.username}
+              onChange={handleInputChange}
+              placeholder="Enter username"
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={newUser.password}
+              onChange={handleInputChange}
+              placeholder="Password"
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
         </div>
 
         <div className="mt-4">
@@ -253,9 +273,9 @@ export function UserManagement() {
             <div key={user.id} className="border p-4 rounded shadow">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-semibold">{user.full_name}</h4>
+                  <h4 className="font-semibold">{user.username}</h4>
                   <p className="text-sm text-gray-600">{user.email}</p>
-                  <p className="text-sm text-gray-600">Username: {user.username}</p>
+                  <p className="text-sm text-gray-600">{user.full_name}</p>
                   <div className="mt-2">
                     <p className="text-sm font-medium">Assigned Companies:</p>
                     <ul className="text-sm text-gray-600 ml-4 list-disc">
