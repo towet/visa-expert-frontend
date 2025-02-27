@@ -135,11 +135,8 @@ function App() {
   };
 
   const handleInterviewClick = () => {
-    if (!isLoggedIn) {
-      setIsLoginPromptOpen(true);
-    } else {
-      setIsInterviewModalOpen(true);
-    }
+    // Always show the interview modal for testing
+    setIsInterviewModalOpen(true);
   };
 
   const handleLoginPromptLogin = () => {
