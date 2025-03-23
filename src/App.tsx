@@ -389,9 +389,9 @@ function App() {
       </div>
       <WhatsAppButton />
       <Modal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)}>
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Enter Your Immigration Code</h2>
+        <div className="p-8 bg-white rounded-lg max-w-md w-full mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-[#1e3a8a]">Welcome to Canada Visa Expert</h2>
             <button
               onClick={() => setShowLoginModal(false)}
               className="text-gray-400 hover:text-gray-500"
@@ -402,39 +402,40 @@ function App() {
               </svg>
             </button>
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Immigration Code
-              </label>
+          <p className="text-gray-600 mb-6">Please enter your visa immigration code to continue</p>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="relative">
               <input
                 type="password"
                 id="password"
                 value={loginCredentials.password}
                 onChange={(e) => setLoginCredentials({ password: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-10"
+                placeholder="Enter your code"
                 required
               />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
             </div>
             {loginError && (
               <p className="text-sm text-red-600">{loginError}</p>
             )}
-            <div className="flex justify-between gap-4">
-              <button
-                type="button"
-                onClick={() => setShowLoginModal(false)}
-                className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-              >
-                Skip
-              </button>
-              <button
-                type="submit"
-                className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-              >
-                Submit
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="w-full bg-[#4f46e5] text-white py-3 px-4 rounded-lg hover:bg-[#4338ca] transition-colors flex items-center justify-center space-x-2 text-base font-medium"
+            >
+              Access Your Immigration Portal
+              <svg className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </form>
+          <p className="text-sm text-gray-500 mt-6 text-center">
+            Need assistance? Contact your immigration advisor
+          </p>
         </div>
       </Modal>
 
